@@ -32,7 +32,7 @@ class Answer extends aggregate_root_1.AggregateRoot {
         return this.props.updatedAt;
     }
     get excerpt() {
-        return this.content.substring(0, 120).trimEnd().concat('...');
+        return this.content.substring(0, 120).trimEnd().concat("...");
     }
     touch() {
         this.props.updatedAt = new Date();

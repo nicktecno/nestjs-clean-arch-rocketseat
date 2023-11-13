@@ -14,37 +14,36 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthenticateController = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_1 = require("@nestjs/jwt");
-const bcryptjs_1 = require("bcryptjs");
-const zod_validation_pipe_1 = require("../pipes/zod-validation-pipe");
-const prisma_service_1 = require("../../database/prisma/prisma.service");
 const zod_1 = require("zod");
+const authenticate_student_1 = require("../../../domain/forum/application/use-cases/authenticate-student");
+const zod_validation_pipe_1 = require("../pipes/zod-validation-pipe");
+const wrong_credentials_error_1 = require("../../../domain/forum/application/use-cases/errors/wrong-credentials-error");
+const public_1 = require("../../auth/public");
 const authenticateBodySchema = zod_1.z.object({
     email: zod_1.z.string().email(),
     password: zod_1.z.string(),
 });
 let AuthenticateController = exports.AuthenticateController = class AuthenticateController {
-    prisma;
-    jwt;
-    constructor(prisma, jwt) {
-        this.prisma = prisma;
-        this.jwt = jwt;
+    authenticateStudent;
+    constructor(authenticateStudent) {
+        this.authenticateStudent = authenticateStudent;
     }
     async handle(body) {
         const { email, password } = body;
-        const user = await this.prisma.user.findUnique({
-            where: {
-                email,
-            },
+        const result = await this.authenticateStudent.execute({
+            email,
+            password,
         });
-        if (!user) {
-            throw new common_1.UnauthorizedException('User credentials do not match.');
+        if (result.isLeft()) {
+            const error = result.value;
+            switch (error.constructor) {
+                case wrong_credentials_error_1.WrongCredentialsError:
+                    throw new common_1.UnauthorizedException(error.message);
+                default:
+                    throw new common_1.BadRequestException(error.message);
+            }
         }
-        const isPasswordValid = await (0, bcryptjs_1.compare)(password, user.password);
-        if (!isPasswordValid) {
-            throw new common_1.UnauthorizedException('User credentials do not match.');
-        }
-        const accessToken = this.jwt.sign({ sub: user.id });
+        const { accessToken } = result.value;
         return {
             access_token: accessToken,
         };
@@ -59,8 +58,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthenticateController.prototype, "handle", null);
 exports.AuthenticateController = AuthenticateController = __decorate([
-    (0, common_1.Controller)('/sessions'),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        jwt_1.JwtService])
+    (0, public_1.Public)(),
+    (0, common_1.Controller)("/sessions"),
+    __metadata("design:paramtypes", [authenticate_student_1.AuthenticateStudentUseCase])
 ], AuthenticateController);
 //# sourceMappingURL=authenticate.controller.js.map

@@ -14,18 +14,27 @@ const create_question_controller_1 = require("./controllers/create-question.cont
 const fetch_recent_questions_controller_1 = require("./controllers/fetch-recent-questions.controller");
 const database_module_1 = require("../database/database.module");
 const create_question_1 = require("../../domain/forum/application/use-cases/create-question");
+const fetch_recent_questions_1 = require("../../domain/forum/application/use-cases/fetch-recent-questions");
+const register_student_1 = require("../../domain/forum/application/use-cases/register-student");
+const authenticate_student_1 = require("../../domain/forum/application/use-cases/authenticate-student");
+const cryptography_module_1 = require("../cryptography/cryptography.module");
 let HttpModule = exports.HttpModule = class HttpModule {
 };
 exports.HttpModule = HttpModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule],
+        imports: [database_module_1.DatabaseModule, cryptography_module_1.CryptographyModule],
         controllers: [
             create_account_controller_1.CreateAccountController,
             authenticate_controller_1.AuthenticateController,
             create_question_controller_1.CreateQuestionController,
             fetch_recent_questions_controller_1.FetchRecentQuestionsController,
         ],
-        providers: [create_question_1.CreateQuestionUseCase],
+        providers: [
+            create_question_1.CreateQuestionUseCase,
+            fetch_recent_questions_1.FetchRecentQuestionsUseCase,
+            register_student_1.RegisterStudentUseCase,
+            authenticate_student_1.AuthenticateStudentUseCase,
+        ],
     })
 ], HttpModule);
 //# sourceMappingURL=http.module.js.map

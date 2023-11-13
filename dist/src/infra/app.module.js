@@ -9,9 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const env_1 = require("./env");
+const env_1 = require("./env/env");
 const auth_module_1 = require("./auth/auth.module");
 const http_module_1 = require("./http/http.module");
+const env_module_1 = require("./env/env.module");
 let AppModule = exports.AppModule = class AppModule {
 };
 exports.AppModule = AppModule = __decorate([
@@ -23,6 +24,7 @@ exports.AppModule = AppModule = __decorate([
             }),
             auth_module_1.AuthModule,
             http_module_1.HttpModule,
+            env_module_1.EnvModule,
         ],
     })
 ], AppModule);
